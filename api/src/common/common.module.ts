@@ -1,8 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { JWTService } from './jwt';
+import { ConnectionDbService } from './connection-db';
 
 const services = [
-    JWTService
+    JWTService,
+    ConnectionDbService
 ]
 
 @Global()

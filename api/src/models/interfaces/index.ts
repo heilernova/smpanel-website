@@ -26,6 +26,7 @@ export interface IServerDbRow {
     user_id: string;
     url: string;
     username: string;
+    role: string;
     token: string;
 }
 

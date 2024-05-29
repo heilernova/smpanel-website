@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { JWTService } from './jwt';
 import { ConnectionDbService } from './connection-db';
+import { SmpanelApiService } from './smpanel-api/smpanel-api.service';
 
 const services = [
     JWTService,

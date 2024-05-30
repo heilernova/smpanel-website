@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ServersService } from '@app/models';
-import { GetSession, Session } from '@app/auth';
+import { AuthGuard, GetSession, Session } from '@app/auth';
 import { RegisterServerDto } from './dto/register-server.dto';
 import { SmpanelApiService } from '@app/common/smpanel-api';
 
+@UseGuards(AuthGuard)
 @Controller('servers')
 export class ServersController {
     constructor(

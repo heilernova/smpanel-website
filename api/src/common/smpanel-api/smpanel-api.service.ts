@@ -1,21 +1,23 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 import { AuthResponse } from './smpanel.interfaces';
 type Method = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
 
 const httpSend = async <T = any>(url: string, method: Method, options: { body?: any, token?: string  }): Promise<AxiosResponse<T>> => {
     try {
-        let res = await axios({ url: url, method: method, data: options.body, headers: { 'app-token': options.token } });
+        let res = await axios({ url: url, method: method, data: options.body, headers: options.token ? { 'app-token': options.token } : undefined });
         (res as any).data = res.data.data;
         return res as any;
     } catch (error: any) {
-        if (error.response){
-            if (error.response.status == 500) throw new HttpException(`Error con el servidor ${url}`, 400);
-            if (error.response.status == 400) throw new HttpException(`El servidor ${url} dice: ${error.response.data.message}`, 400);
-        }
-
-        if (error.request){
-            throw new HttpException(`No hubo respuesta por parte del servidor ${url}`, 400);
+        if (error instanceof AxiosError){
+            if (error.response){
+                if (error.response.status >= 500 && error.response.status < 400) throw new HttpException(`Error con el servidor ${url}`, 400);
+                if (error.response.status >= 400 && error.response.status < 500) throw new HttpException(`El servidor ${url} dice: ${error.response.data.message}`, 400);
+            }
+    
+            if (error.request){
+                throw new HttpException(`No hubo respuesta por parte del servidor ${url}`, 400);
+            }
         }
 
         throw new HttpException("Error inesperado", 500);
@@ -27,7 +29,7 @@ export class SmpanelApiService {
     constructor(){}
     
     async signIn(url: string, username: string, password: string): Promise<AuthResponse> {
-        let result = await httpSend<AuthResponse>(url, 'POST', { body:  { hostname: "SM Panel Website API", username, password }});
+        let result = await httpSend<AuthResponse>(`${url}/sign-in`, 'POST', { body:  { hostname: "SM Panel Website API", username, password }});
         return result.data;
     }
 

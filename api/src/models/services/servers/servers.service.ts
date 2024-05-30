@@ -21,8 +21,19 @@ export class ServersService {
         return (await this._db.query<IServerDbRow>('select * from servers where id = $1 and user_id = $2', [id])).rows[0] ?? undefined;
     }
 
-    async getAll(userId: string): Promise<IServerDbRow[]> {
-        return (await this._db.query<IServerDbRow>('select * from servers where user_id = $1', [userId])).rows;
+    async getAll(filter?: { userId?: string, url?: string, ignoreId?: string }): Promise<IServerDbRow[]> {
+        let conditions: string[] = [];
+        let params: any[] | undefined = [];
+        let sql: string = 'select * from servers';
+        if (filter?.userId) conditions.push(`user_id = $${params.push(filter.userId)}`);
+        if (filter?.url) conditions.push(`url = $${filter.url}`);
+        if (filter?.ignoreId) conditions.push(`id <>> $${filter.ignoreId}`);
+        if (conditions.length > 0){
+            sql += " where " + conditions.join(" and ");
+        } else {
+            params = undefined;
+        }
+        return (await this._db.query<IServerDbRow>(sql, params)).rows;
     }
 
     async update(id: string, data: IServerDbRowUpdate): Promise<boolean> {

@@ -31,7 +31,7 @@ export class ServersController {
             id: server.id,
             create_at: server.create_at,
             url: server.url,
-            username: server.user_id
+            username: server.username
         }
     }
 
@@ -42,7 +42,7 @@ export class ServersController {
                 id: server.id,
                 create_at: server.create_at,
                 url: server.url,
-                username: server.user_id
+                username: server.username
             }
         })
     }

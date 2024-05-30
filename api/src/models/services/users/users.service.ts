@@ -35,7 +35,7 @@ export class UsersService {
     }
 
     async get(value: string): Promise<IUserDbRow | undefined> {
-        let sql: string = `select * from users where ${isUUID(value) ? 'id = $1' : (isEmail(value) ? 'email = lower($1)' : 'lower(username) = lower($1)')}`;
+        let sql: string = `select * from users where ${isUUID(value) ? 'id = $1' : 'email = lower($1)'}`;
         return (await this._db.query<IUserDbRow>(sql, [value])).rows[0] ?? undefined;
     }
 

@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpException, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Post, UseGuards } from '@nestjs/common';
 import { IUserDbRow, UsersService } from '@app/models';
 import { JWTService } from '@app/common/jwt';
 import { compareSync } from 'bcrypt';
-import { GetSession, Session } from '@app/auth';
+import { AuthGuard, GetSession, Session } from '@app/auth';
 import { CredentialsDto } from './dto/credentials.dto';
 
 @Controller()
@@ -25,6 +25,7 @@ export class AuthController {
         }
     }
 
+    @UseGuards(AuthGuard)
     @Get('verify-session')
     async verifySession(@GetSession() session: Session){
         let user: IUserDbRow | undefined = await this._users.get(session.id);

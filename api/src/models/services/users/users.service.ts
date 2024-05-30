@@ -3,10 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { IUserDbRow, IUserDbRowCreate, IUserDbRowUpdate } from '../../interfaces';
 import { UUID } from 'crypto';
 import { isEmail, isUUID } from 'class-validator';
-import { capitalize } from '@app/common/utils';
 import { hashSync } from 'bcrypt';
+import { capitalize } from '@app/common/utils';
 
-export type FilterUserOptions = { omitId: UUID }
+export type FilterUserOptions = { omitId: string }
 
 @Injectable()
 export class UsersService {

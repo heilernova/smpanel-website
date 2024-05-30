@@ -16,11 +16,13 @@ export class AuthController {
     async signIn(@Body() credentials: CredentialsDto): Promise<any> {
         let user: IUserDbRow | undefined = await this._users.get(credentials.username);
         if (!user) throw new HttpException('Usuario no encontrado', 400);
-        if (compareSync(credentials.password, user.password)) throw new HttpException('Contraseña incorrecta', 400);
-        return this._jwt.signIn({
-            id: user.id,
-            role: user.permissions
-        }, '60 days');
+        if (!compareSync(credentials.password, user.password)) throw new HttpException('Contraseña incorrecta', 400);
+        return {
+            token: this._jwt.signIn({
+                id: user.id,
+                role: user.permissions
+            }, '60 days')
+        }
     }
 
     @Get('verify-session')

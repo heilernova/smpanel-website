@@ -5,7 +5,8 @@ import { SmpanelApiService } from './smpanel-api/smpanel-api.service';
 
 const services = [
     JWTService,
-    ConnectionDbService
+    ConnectionDbService,
+    SmpanelApiService
 ]
 
 @Global()

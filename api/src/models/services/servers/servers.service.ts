@@ -17,8 +17,14 @@ export class ServersService {
         return (await this._db.insert<IServerDbRow>('servers', data, '*')).rows[0];
     }
 
-    async get(id: string): Promise<IServerDbRow | undefined> {
-        return (await this._db.query<IServerDbRow>('select * from servers where id = $1 and user_id = $2', [id])).rows[0] ?? undefined;
+    async get(id: string, options?: { usersId: string }): Promise<IServerDbRow | undefined> {
+        let params: any[] = [id];
+        let sql: string = 'select * from servers where id = $1';
+        if (options?.usersId){
+            sql += ' and user_id = $2';
+            params.push(options.usersId);
+        }
+        return (await this._db.query<IServerDbRow>(sql, params)).rows[0] ?? undefined;
     }
 
     async getAll(filter?: { userId?: string, url?: string, ignoreId?: string }): Promise<IServerDbRow[]> {
@@ -26,8 +32,8 @@ export class ServersService {
         let params: any[] | undefined = [];
         let sql: string = 'select * from servers';
         if (filter?.userId) conditions.push(`user_id = $${params.push(filter.userId)}`);
-        if (filter?.url) conditions.push(`url = $${filter.url}`);
-        if (filter?.ignoreId) conditions.push(`id <>> $${filter.ignoreId}`);
+        if (filter?.url) conditions.push(`url = $${params.push(filter.url)}`);
+        if (filter?.ignoreId) conditions.push(`id <>> $${params.push(filter.ignoreId)}`);
         if (conditions.length > 0){
             sql += " where " + conditions.join(" and ");
         } else {
